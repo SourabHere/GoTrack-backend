@@ -146,3 +146,39 @@ func (userHandler *UserHandler) DeleteUser(context *gin.Context) {
 	})
 
 }
+
+func (userHandler *UserHandler) GetProjectsByUserIdForOrganisation(context *gin.Context) {
+	userUUID := context.Param("uuid")
+
+	if userUUID == "" {
+		context.JSON(400, gin.H{
+			"message": "invalid request body",
+		})
+
+		return
+	}
+
+	organisationId := context.Query("organisationId")
+
+	if organisationId == "" {
+		context.JSON(400, gin.H{
+			"message": "Organisation not found",
+		})
+
+		return
+	}
+
+	projects, err := userHandler.userUsecase.GetProjectsByUserIdForOrganisation(userUUID, organisationId)
+
+	if err != nil {
+		context.JSON(400, gin.H{
+			"error":   err.Error(),
+			"message": "could not get projects",
+		})
+
+		return
+	}
+
+	context.JSON(200, projects)
+
+}

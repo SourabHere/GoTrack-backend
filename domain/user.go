@@ -17,6 +17,7 @@ type UserRepository interface {
 	Delete(id string) error
 	GetAllUsers() ([]User, error)
 	GetUserById(id string) (*User, error)
+	GetProjectsByUserIdForOrganisation(userid int, organisationId string) ([]Project, error)
 }
 
 type UserUsecase interface {
@@ -25,4 +26,5 @@ type UserUsecase interface {
 	DeleteUser(id string) error
 	GetUsers() ([]User, error)
 	GetUserById(id string) (*User, error)
+	GetProjectsByUserIdForOrganisation(userUUID string, organisationId string) ([]Project, error)
 }
