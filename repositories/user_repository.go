@@ -77,11 +77,11 @@ func (userRep *UserRepository) GetAllUsers() ([]domain.User, error) {
 	return users, nil
 }
 
-func (userRep *UserRepository) GetUserById(id string) (*domain.User, error) {
+func (userRep *UserRepository) GetUserById(uuid string) (*domain.User, error) {
 
 	query := `SELECT * FROM Users WHERE user_uuid = $1;`
 
-	row := userRep.DB.QueryRow(query, id)
+	row := userRep.DB.QueryRow(query, uuid)
 
 	var user domain.User
 
@@ -97,8 +97,6 @@ func (userRep *UserRepository) GetUserById(id string) (*domain.User, error) {
 	)
 
 	if err != nil {
-		fmt.Println(id)
-		fmt.Println(err)
 		return nil, err
 	}
 
@@ -147,4 +145,45 @@ func (userRep *UserRepository) Delete(id string) error {
 	_, err = stmt.Exec(id)
 
 	return err
+}
+
+func (userRep *UserRepository) GetProjectsByUserIdForOrganisation(userId int, organisationId string) ([]domain.Project, error) {
+
+	query := `SELECT p.project_id, p.project_name, p.project_desc, p.project_category_id, p.project_url, p.organisation_id, p.created_at, p.updated_at 
+	FROM Projects p INNER JOIN UserProjects as up ON p.project_id = up.project_id 
+	WHERE up.user_id = $1 AND p.organisation_id = $2;`
+
+	rows, err := userRep.DB.Query(query, userId, organisationId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if rows == nil {
+		return nil, errors.New("no rows returned from the database query")
+	}
+
+	defer rows.Close()
+
+	var projects []domain.Project
+
+	for rows.Next() {
+		var project domain.Project
+		err := rows.Scan(&project.ProjectID,
+			&project.ProjectName,
+			&project.Project_Desc,
+			&project.Project_Category_ID,
+			&project.Project_URL,
+			&project.Organisation_ID,
+			&project.Created_At,
+			&project.Updated_At,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+		projects = append(projects, project)
+	}
+
+	return projects, nil
 }

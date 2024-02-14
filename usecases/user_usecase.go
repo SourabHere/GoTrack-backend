@@ -1,6 +1,8 @@
 package usecases
 
-import "example.com/domain"
+import (
+	"example.com/domain"
+)
 
 type UserUsecase struct {
 	userRepo domain.UserRepository
@@ -20,8 +22,8 @@ func (userUC *UserUsecase) GetUsers() ([]domain.User, error) {
 	return userUC.userRepo.GetAllUsers()
 }
 
-func (userUC *UserUsecase) GetUserById(id string) (*domain.User, error) {
-	return userUC.userRepo.GetUserById(id)
+func (userUC *UserUsecase) GetUserById(uuid string) (*domain.User, error) {
+	return userUC.userRepo.GetUserById(uuid)
 }
 
 func (userUC *UserUsecase) UpdateUser(user *domain.User) error {
@@ -30,4 +32,15 @@ func (userUC *UserUsecase) UpdateUser(user *domain.User) error {
 
 func (userUC *UserUsecase) DeleteUser(id string) error {
 	return userUC.userRepo.Delete(id)
+}
+
+func (userUC *UserUsecase) GetProjectsByUserIdForOrganisation(userUUID string, organisationId string) ([]domain.Project, error) {
+	user, err := userUC.GetUserById(userUUID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return userUC.userRepo.GetProjectsByUserIdForOrganisation(user.UserID, organisationId)
+
 }

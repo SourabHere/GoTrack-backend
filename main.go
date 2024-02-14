@@ -25,7 +25,7 @@ func main() {
 		panic(err)
 	}
 
-	handlers := app.IntitialiseHandlers(db)
+	handlers := app.IntitialiseHandlers(db.DB)
 
 	if err != nil {
 		fmt.Println("Error: ", err.Error())

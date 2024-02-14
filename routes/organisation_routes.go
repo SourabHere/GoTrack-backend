@@ -8,7 +8,7 @@ import (
 
 func SetOrganisationRoutes(router *gin.Engine, handlers *app.HandlersSchema) {
 
-	apiOrganisations := router.Group("/organisations")
+	apiOrganisations := router.Group("api/organisations")
 	{
 
 		apiOrganisations.Use(middlewares.AuthMiddleware())

@@ -16,7 +16,7 @@ type PostgresDB struct {
 	DB *sql.DB
 }
 
-func NewPostgresDB() (*sql.DB, error) {
+func NewPostgresDB() (*PostgresDB, error) {
 	connectionString := os.Getenv("CONNECTION_STRING")
 
 	db, err := sql.Open("postgres", connectionString)
@@ -30,5 +30,9 @@ func NewPostgresDB() (*sql.DB, error) {
 		return nil, fmt.Errorf("error pinging PostgreSQL database: %w", err)
 	}
 
-	return db, nil
+	var PgDB = &PostgresDB{
+		DB: db,
+	}
+
+	return PgDB, nil
 }

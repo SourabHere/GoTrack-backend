@@ -8,7 +8,7 @@ import (
 
 func SetProjectRoutes(router *gin.Engine, handlers *app.HandlersSchema) {
 
-	apiProjects := router.Group("/projects")
+	apiProjects := router.Group("api/projects")
 	{
 		apiProjects.Use(middlewares.AuthMiddleware())
 

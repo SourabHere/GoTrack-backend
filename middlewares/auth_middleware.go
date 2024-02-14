@@ -63,3 +63,64 @@ func AuthMiddleware() gin.HandlerFunc {
 		context.Next()
 	}
 }
+
+func VerifyUser() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		err := godotenv.Load()
+
+		if err != nil {
+			fmt.Println("Error: ", err.Error())
+		}
+
+		client_secret_key := os.Getenv("CLERK_CLIENT_SECRET")
+
+		client, err := clerk.NewClient(client_secret_key)
+
+		if err != nil {
+
+			context.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+				"message": "Error creating Clerk client",
+			})
+
+			return
+
+		}
+
+		token := strings.TrimPrefix(context.GetHeader("Authorization"), "Bearer ")
+
+		sessionId, err := utils.GetSessionIDFromToken(token)
+		if err != nil {
+			fmt.Println("Error getting session ID from token:", err)
+
+			context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "Not authorized",
+			})
+
+			return
+
+		}
+
+		session, err := client.Sessions().Read(sessionId)
+
+		if err != nil || session.Status != "active" {
+
+			context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "Invalid or expired session",
+			})
+
+			return
+		}
+
+		userUUID := context.Param("uuid")
+
+		if session.UserID != userUUID {
+			context.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "Not authorized",
+			})
+
+			return
+		}
+
+		context.Next()
+	}
+}
