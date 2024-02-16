@@ -5,7 +5,6 @@ type User struct {
 	FirstName      string `json:"firstName"`
 	LastName       string `json:"lastName"`
 	Email          string `json:"email"`
-	Password       string `json:"password"`
 	Designation_ID int    `json:"designationId"`
 	DateOfJoining  string `json:"dateOfJoining"`
 	UserUUID       string `json:"userUUID"`

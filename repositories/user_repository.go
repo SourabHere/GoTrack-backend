@@ -19,7 +19,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 func (userRep *UserRepository) Save(u *domain.User) error {
-	query := `INSERT INTO Users (first_name,last_name,email,password,designation_id,user_uuid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id;;`
+	query := `INSERT INTO Users (first_name,last_name,email,designation_id,user_uuid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id;;`
 
 	stmt, err := userRep.DB.Prepare(query)
 
@@ -33,7 +33,6 @@ func (userRep *UserRepository) Save(u *domain.User) error {
 		u.FirstName,
 		u.LastName,
 		u.Email,
-		u.Password,
 		u.Designation_ID,
 		u.UserUUID,
 	)
@@ -67,7 +66,7 @@ func (userRep *UserRepository) GetAllUsers() ([]domain.User, error) {
 
 	for rows.Next() {
 		var user domain.User
-		err := rows.Scan(&user.UserID, &user.FirstName, &user.LastName, &user.Email, &user.Password, &user.Designation_ID, &user.DateOfJoining, &user.UserUUID)
+		err := rows.Scan(&user.UserID, &user.FirstName, &user.LastName, &user.Email, &user.Designation_ID, &user.DateOfJoining, &user.UserUUID)
 		if err != nil {
 			return nil, err
 		}
@@ -90,7 +89,6 @@ func (userRep *UserRepository) GetUserById(uuid string) (*domain.User, error) {
 		&user.FirstName,
 		&user.LastName,
 		&user.Email,
-		&user.Password,
 		&user.Designation_ID,
 		&user.DateOfJoining,
 		&user.UserUUID,
@@ -106,7 +104,7 @@ func (userRep *UserRepository) GetUserById(uuid string) (*domain.User, error) {
 
 func (userRep *UserRepository) Update(u *domain.User) error {
 
-	query := `UPDATE Users SET first_name = $1, last_name = $2, email = $3, password = $4, designation_id = $5 WHERE user_uuid = $6;`
+	query := `UPDATE Users SET first_name = $1, last_name = $2, email = $3, designation_id = $5 WHERE user_uuid = $6;`
 
 	stmt, err := userRep.DB.Prepare(query)
 
@@ -120,7 +118,6 @@ func (userRep *UserRepository) Update(u *domain.User) error {
 		u.FirstName,
 		u.LastName,
 		u.Email,
-		u.Password,
 		u.Designation_ID,
 		u.UserUUID,
 	)
@@ -152,6 +149,9 @@ func (userRep *UserRepository) GetProjectsByUserIdForOrganisation(userId int, or
 	query := `SELECT p.project_id, p.project_name, p.project_desc, p.project_category_id, p.project_url, p.organisation_id, p.created_at, p.updated_at 
 	FROM Projects p INNER JOIN UserProjects as up ON p.project_id = up.project_id 
 	WHERE up.user_id = $1 AND p.organisation_id = $2;`
+
+	fmt.Println(userId)
+	fmt.Println(organisationId)
 
 	rows, err := userRep.DB.Query(query, userId, organisationId)
 
