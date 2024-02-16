@@ -19,6 +19,10 @@ func (UserHandler *UserHandler) CreateUser(context *gin.Context) {
 
 	var user domain.User
 
+	// extractedUser := {
+	// 	"username": context.PostForm("username"),
+	// }
+
 	err := context.BindJSON(&user)
 
 	if err != nil {
