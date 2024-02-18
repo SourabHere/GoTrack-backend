@@ -1,4 +1,4 @@
-package responses
+package requests
 
 type CreateUserRequest struct {
 	Data struct {

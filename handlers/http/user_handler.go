@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"example.com/domain"
-	"example.com/domain/responses"
+	"example.com/domain/requests"
 	"github.com/gin-gonic/gin"
 )
 
@@ -22,9 +22,9 @@ func (UserHandler *UserHandler) CreateUser(context *gin.Context) {
 
 	var user domain.User
 
-	var req responses.DetailParser
+	var req requests.DetailParser
 
-	var fetchedUser responses.CreateUserRequest
+	var fetchedUser requests.CreateUserRequest
 
 	err := context.ShouldBindJSON(&req)
 
