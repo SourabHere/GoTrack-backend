@@ -19,7 +19,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 func (userRep *UserRepository) Save(u *domain.User) error {
-	query := `INSERT INTO Users (first_name,last_name,email,designation_id,user_uuid) VALUES ($1, $2, $3, $4, $5, $6) RETURNING user_id;;`
+	query := `INSERT INTO Users (first_name,last_name,email,designation_id,user_uuid) VALUES ($1, $2, $3, $4, $5) RETURNING user_id;`
 
 	stmt, err := userRep.DB.Prepare(query)
 
@@ -104,7 +104,7 @@ func (userRep *UserRepository) GetUserById(uuid string) (*domain.User, error) {
 
 func (userRep *UserRepository) Update(u *domain.User) error {
 
-	query := `UPDATE Users SET first_name = $1, last_name = $2, email = $3, designation_id = $5 WHERE user_uuid = $6;`
+	query := `UPDATE Users SET first_name = $1, last_name = $2, email = $3, designation_id = $4 WHERE user_uuid = $5;`
 
 	stmt, err := userRep.DB.Prepare(query)
 

@@ -1,7 +1,10 @@
 package http
 
 import (
+	"fmt"
+
 	"example.com/domain"
+	"example.com/domain/responses"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,36 +22,88 @@ func (UserHandler *UserHandler) CreateUser(context *gin.Context) {
 
 	var user domain.User
 
-	// extractedUser := {
-	// 	"username": context.PostForm("username"),
-	// }
+	var req responses.DetailParser
 
-	err := context.BindJSON(&user)
+	var fetchedUser responses.CreateUserRequest
+
+	err := context.ShouldBindJSON(&req)
 
 	if err != nil {
-		context.JSON(400, gin.H{
-			"error":   err,
-			"message": "invalid request body",
+		fmt.Println(err)
+		context.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if req.Type == "user.deleted" {
+		userUUID := req.Data.UserUUID
+
+		err := UserHandler.userUsecase.DeleteUser(userUUID)
+
+		if err != nil {
+			context.JSON(400, gin.H{
+				"message": "could not delete user",
+			})
+
+			return
+		}
+
+		context.JSON(200, gin.H{
+			"message": "user deleted successfully",
 		})
 
 		return
 	}
 
-	err = UserHandler.userUsecase.CreateUser(&user)
+	err = context.ShouldBindJSON(&fetchedUser)
 
 	if err != nil {
-		context.JSON(400, gin.H{
-			"error":   err.Error(),
-			"message": "could not create user",
-		})
-
+		fmt.Println(err)
+		context.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	context.JSON(200, gin.H{
-		"message": "user created successfully",
-	})
+	user.FirstName = fetchedUser.Data.FirstName
+	user.LastName = fetchedUser.Data.LastName
+	user.Email = fetchedUser.Data.Email[0].EmailAddress
+	user.UserUUID = fetchedUser.Data.UserUUID
 
+	if req.Type == "user.updated" {
+
+		err = UserHandler.userUsecase.UpdateUser(&user)
+
+		if err != nil {
+			context.JSON(400, gin.H{
+				"message": "could not update user",
+			})
+
+			return
+		}
+
+		context.JSON(200, gin.H{
+			"message": "user updated successfully",
+		})
+
+		return
+
+	} else {
+
+		user.Designation_ID = 1
+
+		err = UserHandler.userUsecase.CreateUser(&user)
+
+		if err != nil {
+			context.JSON(400, gin.H{
+				"message": "could not create user",
+			})
+
+			return
+		}
+
+		context.JSON(200, gin.H{
+			"message": "user created successfully",
+		})
+
+	}
 }
 
 func (userHandler *UserHandler) GetUsers(context *gin.Context) {
