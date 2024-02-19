@@ -1,18 +1,16 @@
 package http
 
 import (
-	"fmt"
-
-	"example.com/domain"
+	"example.com/domain/entities"
 	"example.com/domain/requests"
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
-	userUsecase domain.UserUsecase
+	userUsecase entities.UserUsecase
 }
 
-func NewUserHandler(userUsecase domain.UserUsecase) *UserHandler {
+func NewUserHandler(userUsecase entities.UserUsecase) *UserHandler {
 	return &UserHandler{
 		userUsecase: userUsecase,
 	}
@@ -20,16 +18,13 @@ func NewUserHandler(userUsecase domain.UserUsecase) *UserHandler {
 
 func (UserHandler *UserHandler) CreateUser(context *gin.Context) {
 
-	var user domain.User
+	var user entities.User
 
-	var req requests.DetailParser
-
-	var fetchedUser requests.CreateUserRequest
+	var req requests.CreateUserRequest
 
 	err := context.ShouldBindJSON(&req)
 
 	if err != nil {
-		fmt.Println(err)
 		context.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -40,6 +35,7 @@ func (UserHandler *UserHandler) CreateUser(context *gin.Context) {
 		err := UserHandler.userUsecase.DeleteUser(userUUID)
 
 		if err != nil {
+
 			context.JSON(400, gin.H{
 				"message": "could not delete user",
 			})
@@ -54,24 +50,17 @@ func (UserHandler *UserHandler) CreateUser(context *gin.Context) {
 		return
 	}
 
-	err = context.ShouldBindJSON(&fetchedUser)
-
-	if err != nil {
-		fmt.Println(err)
-		context.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	user.FirstName = fetchedUser.Data.FirstName
-	user.LastName = fetchedUser.Data.LastName
-	user.Email = fetchedUser.Data.Email[0].EmailAddress
-	user.UserUUID = fetchedUser.Data.UserUUID
+	user.FirstName = req.Data.FirstName
+	user.LastName = req.Data.LastName
+	user.Email = req.Data.Email[0].EmailAddress
+	user.UserUUID = req.Data.UserUUID
 
 	if req.Type == "user.updated" {
 
 		err = UserHandler.userUsecase.UpdateUser(&user)
 
 		if err != nil {
+
 			context.JSON(400, gin.H{
 				"message": "could not update user",
 			})
@@ -150,7 +139,7 @@ func (UserHandler *UserHandler) UpdateUser(context *gin.Context) {
 		})
 	}
 
-	var user domain.User
+	var user entities.User
 
 	err := context.BindJSON(&user)
 

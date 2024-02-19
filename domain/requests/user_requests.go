@@ -13,11 +13,3 @@ type CreateUserRequest struct {
 
 	Type string `json:"type"`
 }
-
-type DetailParser struct {
-	Data struct {
-		UserUUID string `json:"id"`
-	} `json:"data"`
-
-	Type string `json:"type"`
-}

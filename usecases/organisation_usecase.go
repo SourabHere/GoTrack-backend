@@ -1,22 +1,22 @@
 package usecases
 
-import "example.com/domain"
+import "example.com/domain/entities"
 
 type OrganisationUsecase struct {
-	OrganisationRepo domain.OrganisationRepository
+	OrganisationRepo entities.OrganisationRepository
 }
 
-func NewOrganisationUsecase(orgRepo domain.OrganisationRepository) *OrganisationUsecase {
+func NewOrganisationUsecase(orgRepo entities.OrganisationRepository) *OrganisationUsecase {
 	return &OrganisationUsecase{
 		OrganisationRepo: orgRepo,
 	}
 }
 
-func (orgUC *OrganisationUsecase) CreateOrganisation(org *domain.Organisation) error {
+func (orgUC *OrganisationUsecase) CreateOrganisation(org *entities.Organisation) error {
 	return orgUC.OrganisationRepo.Save(org)
 }
 
-func (orgUC *OrganisationUsecase) UpdateOrganisation(org *domain.Organisation) error {
+func (orgUC *OrganisationUsecase) UpdateOrganisation(org *entities.Organisation) error {
 	return orgUC.OrganisationRepo.Update(org)
 }
 
@@ -24,10 +24,10 @@ func (orgUC *OrganisationUsecase) DeleteOrganisation(id int64) error {
 	return orgUC.OrganisationRepo.Delete(id)
 }
 
-func (orgUC *OrganisationUsecase) GetAllOrganisations() ([]domain.Organisation, error) {
+func (orgUC *OrganisationUsecase) GetAllOrganisations() ([]entities.Organisation, error) {
 	return orgUC.OrganisationRepo.GetAllOrganisations()
 }
 
-func (orgUC *OrganisationUsecase) GetOrganisationById(id int64) (*domain.Organisation, error) {
+func (orgUC *OrganisationUsecase) GetOrganisationById(id int64) (*entities.Organisation, error) {
 	return orgUC.OrganisationRepo.GetOrganisationById(id)
 }

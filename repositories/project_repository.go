@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"example.com/db/queries"
-	"example.com/domain"
+	"example.com/domain/entities"
 )
 
 type ProjectRepository struct {
@@ -19,7 +19,7 @@ func NewProjectRepository(db *sql.DB) *ProjectRepository {
 	}
 }
 
-func (projectRep *ProjectRepository) Save(project *domain.Project) error {
+func (projectRep *ProjectRepository) Save(project *entities.Project) error {
 	query := queries.InsertProject()
 
 	stmt, err := projectRep.DB.Prepare(query)
@@ -41,7 +41,7 @@ func (projectRep *ProjectRepository) Save(project *domain.Project) error {
 
 }
 
-func (projectRep *ProjectRepository) Update(project *domain.Project) error {
+func (projectRep *ProjectRepository) Update(project *entities.Project) error {
 	query := queries.UpdateProject()
 
 	stmt, err := projectRep.DB.Prepare(query)
@@ -83,7 +83,7 @@ func (projectRep *ProjectRepository) Delete(id int64) error {
 
 }
 
-func (projectRep *ProjectRepository) GetAllProjects() ([]domain.Project, error) {
+func (projectRep *ProjectRepository) GetAllProjects() ([]entities.Project, error) {
 
 	query := queries.GetAllProjects()
 
@@ -95,10 +95,10 @@ func (projectRep *ProjectRepository) GetAllProjects() ([]domain.Project, error) 
 
 	defer rows.Close()
 
-	var projects []domain.Project
+	var projects []entities.Project
 
 	for rows.Next() {
-		var project domain.Project
+		var project entities.Project
 
 		err := rows.Scan(
 			&project.ProjectID,
@@ -121,13 +121,13 @@ func (projectRep *ProjectRepository) GetAllProjects() ([]domain.Project, error) 
 	return projects, nil
 }
 
-func (projectRep *ProjectRepository) GetProjectById(id int64) (*domain.Project, error) {
+func (projectRep *ProjectRepository) GetProjectById(id int64) (*entities.Project, error) {
 
 	query := queries.GetProjectById()
 
 	row := projectRep.DB.QueryRow(query, id)
 
-	var project domain.Project
+	var project entities.Project
 
 	err := row.Scan(
 		&project.ProjectID,

@@ -4,15 +4,15 @@ import (
 	"net/http"
 	"strconv"
 
-	"example.com/domain"
+	"example.com/domain/entities"
 	"github.com/gin-gonic/gin"
 )
 
 type ProjectHandler struct {
-	ProjectUsecase domain.ProjectUsecase
+	ProjectUsecase entities.ProjectUsecase
 }
 
-func NewProjectHandler(projectUsecase domain.ProjectUsecase) *ProjectHandler {
+func NewProjectHandler(projectUsecase entities.ProjectUsecase) *ProjectHandler {
 	return &ProjectHandler{
 		ProjectUsecase: projectUsecase,
 	}
@@ -67,7 +67,7 @@ func (projectHandler *ProjectHandler) GetProjectById(context *gin.Context) {
 }
 
 func (projectHandler *ProjectHandler) AddProject(context *gin.Context) {
-	var project *domain.Project
+	var project *entities.Project
 
 	err := context.BindJSON(&project)
 
@@ -109,7 +109,7 @@ func (projectHandler *ProjectHandler) UpdateProject(context *gin.Context) {
 		return
 	}
 
-	var project domain.Project
+	var project entities.Project
 
 	err = context.ShouldBind(&project)
 

@@ -3,9 +3,8 @@ package repositories
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 
-	"example.com/domain"
+	"example.com/domain/entities"
 )
 
 type UserRepository struct {
@@ -18,7 +17,7 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 	}
 }
 
-func (userRep *UserRepository) Save(u *domain.User) error {
+func (userRep *UserRepository) Save(u *entities.User) error {
 	query := `INSERT INTO Users (first_name,last_name,email,designation_id,user_uuid) VALUES ($1, $2, $3, $4, $5) RETURNING user_id;`
 
 	stmt, err := userRep.DB.Prepare(query)
@@ -46,7 +45,7 @@ func (userRep *UserRepository) Save(u *domain.User) error {
 	return err
 }
 
-func (userRep *UserRepository) GetAllUsers() ([]domain.User, error) {
+func (userRep *UserRepository) GetAllUsers() ([]entities.User, error) {
 
 	query := `SELECT * FROM Users;`
 
@@ -62,10 +61,10 @@ func (userRep *UserRepository) GetAllUsers() ([]domain.User, error) {
 
 	defer rows.Close()
 
-	var users []domain.User
+	var users []entities.User
 
 	for rows.Next() {
-		var user domain.User
+		var user entities.User
 		err := rows.Scan(&user.UserID, &user.FirstName, &user.LastName, &user.Email, &user.Designation_ID, &user.DateOfJoining, &user.UserUUID)
 		if err != nil {
 			return nil, err
@@ -76,13 +75,13 @@ func (userRep *UserRepository) GetAllUsers() ([]domain.User, error) {
 	return users, nil
 }
 
-func (userRep *UserRepository) GetUserById(uuid string) (*domain.User, error) {
+func (userRep *UserRepository) GetUserById(uuid string) (*entities.User, error) {
 
 	query := `SELECT * FROM Users WHERE user_uuid = $1;`
 
 	row := userRep.DB.QueryRow(query, uuid)
 
-	var user domain.User
+	var user entities.User
 
 	err := row.Scan(
 		&user.UserID,
@@ -102,7 +101,7 @@ func (userRep *UserRepository) GetUserById(uuid string) (*domain.User, error) {
 
 }
 
-func (userRep *UserRepository) Update(u *domain.User) error {
+func (userRep *UserRepository) Update(u *entities.User) error {
 
 	query := `UPDATE Users SET first_name = $1, last_name = $2, email = $3, designation_id = $4 WHERE user_uuid = $5;`
 
@@ -137,21 +136,16 @@ func (userRep *UserRepository) Delete(id string) error {
 
 	defer stmt.Close()
 
-	fmt.Println(id)
-
 	_, err = stmt.Exec(id)
 
 	return err
 }
 
-func (userRep *UserRepository) GetProjectsByUserIdForOrganisation(userId int, organisationId string) ([]domain.Project, error) {
+func (userRep *UserRepository) GetProjectsByUserIdForOrganisation(userId int, organisationId string) ([]entities.Project, error) {
 
 	query := `SELECT p.project_id, p.project_name, p.project_desc, p.project_category_id, p.project_url, p.organisation_id, p.created_at, p.updated_at 
 	FROM Projects p INNER JOIN UserProjects as up ON p.project_id = up.project_id 
 	WHERE up.user_id = $1 AND p.organisation_id = $2;`
-
-	fmt.Println(userId)
-	fmt.Println(organisationId)
 
 	rows, err := userRep.DB.Query(query, userId, organisationId)
 
@@ -165,10 +159,10 @@ func (userRep *UserRepository) GetProjectsByUserIdForOrganisation(userId int, or
 
 	defer rows.Close()
 
-	var projects []domain.Project
+	var projects []entities.Project
 
 	for rows.Next() {
-		var project domain.Project
+		var project entities.Project
 		err := rows.Scan(&project.ProjectID,
 			&project.ProjectName,
 			&project.Project_Desc,
