@@ -1,4 +1,4 @@
-package domain
+package entities
 
 type User struct {
 	UserID         int    `json:"userId"`

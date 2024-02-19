@@ -1,15 +1,16 @@
 package http
 
 import (
-	"example.com/domain"
+	"example.com/domain/entities"
+	"example.com/domain/requests"
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
-	userUsecase domain.UserUsecase
+	userUsecase entities.UserUsecase
 }
 
-func NewUserHandler(userUsecase domain.UserUsecase) *UserHandler {
+func NewUserHandler(userUsecase entities.UserUsecase) *UserHandler {
 	return &UserHandler{
 		userUsecase: userUsecase,
 	}
@@ -17,38 +18,81 @@ func NewUserHandler(userUsecase domain.UserUsecase) *UserHandler {
 
 func (UserHandler *UserHandler) CreateUser(context *gin.Context) {
 
-	var user domain.User
+	var user entities.User
 
-	// extractedUser := {
-	// 	"username": context.PostForm("username"),
-	// }
+	var req requests.CreateUserRequest
 
-	err := context.BindJSON(&user)
+	err := context.ShouldBindJSON(&req)
 
 	if err != nil {
-		context.JSON(400, gin.H{
-			"error":   err,
-			"message": "invalid request body",
+		context.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if req.Type == "user.deleted" {
+		userUUID := req.Data.UserUUID
+
+		err := UserHandler.userUsecase.DeleteUser(userUUID)
+
+		if err != nil {
+
+			context.JSON(400, gin.H{
+				"message": "could not delete user",
+			})
+
+			return
+		}
+
+		context.JSON(200, gin.H{
+			"message": "user deleted successfully",
 		})
 
 		return
 	}
 
-	err = UserHandler.userUsecase.CreateUser(&user)
+	user.FirstName = req.Data.FirstName
+	user.LastName = req.Data.LastName
+	user.Email = req.Data.Email[0].EmailAddress
+	user.UserUUID = req.Data.UserUUID
 
-	if err != nil {
-		context.JSON(400, gin.H{
-			"error":   err.Error(),
-			"message": "could not create user",
+	if req.Type == "user.updated" {
+
+		err = UserHandler.userUsecase.UpdateUser(&user)
+
+		if err != nil {
+
+			context.JSON(400, gin.H{
+				"message": "could not update user",
+			})
+
+			return
+		}
+
+		context.JSON(200, gin.H{
+			"message": "user updated successfully",
 		})
 
 		return
+
+	} else {
+
+		user.Designation_ID = 1
+
+		err = UserHandler.userUsecase.CreateUser(&user)
+
+		if err != nil {
+			context.JSON(400, gin.H{
+				"message": "could not create user",
+			})
+
+			return
+		}
+
+		context.JSON(200, gin.H{
+			"message": "user created successfully",
+		})
+
 	}
-
-	context.JSON(200, gin.H{
-		"message": "user created successfully",
-	})
-
 }
 
 func (userHandler *UserHandler) GetUsers(context *gin.Context) {
@@ -95,7 +139,7 @@ func (UserHandler *UserHandler) UpdateUser(context *gin.Context) {
 		})
 	}
 
-	var user domain.User
+	var user entities.User
 
 	err := context.BindJSON(&user)
 

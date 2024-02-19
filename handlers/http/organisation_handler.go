@@ -4,15 +4,15 @@ import (
 	"net/http"
 	"strconv"
 
-	"example.com/domain"
+	"example.com/domain/entities"
 	"github.com/gin-gonic/gin"
 )
 
 type Organisationhandler struct {
-	OrganisationUsecase domain.OrganisationUsecase
+	OrganisationUsecase entities.OrganisationUsecase
 }
 
-func NewOrganisationHandler(orgUsecase domain.OrganisationUsecase) *Organisationhandler {
+func NewOrganisationHandler(orgUsecase entities.OrganisationUsecase) *Organisationhandler {
 	return &Organisationhandler{
 		OrganisationUsecase: orgUsecase,
 	}
@@ -62,7 +62,7 @@ func (orgHandler *Organisationhandler) GetOrganisationById(context *gin.Context)
 }
 
 func (orgHandler *Organisationhandler) CreateOrganisation(context *gin.Context) {
-	var org domain.Organisation
+	var org entities.Organisation
 
 	err := context.ShouldBindJSON(&org)
 
@@ -94,7 +94,7 @@ func (orgHandler *Organisationhandler) UpdateOrganisation(context *gin.Context) 
 		return
 	}
 
-	var organisation domain.Organisation
+	var organisation entities.Organisation
 
 	err = context.ShouldBindJSON(&organisation)
 

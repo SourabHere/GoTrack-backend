@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"example.com/db/queries"
-	"example.com/domain"
+	"example.com/domain/entities"
 )
 
 type OrganisationRepository struct {
@@ -18,7 +18,7 @@ func NewOrganisationRepository(db *sql.DB) *OrganisationRepository {
 	}
 }
 
-func (organisationRep *OrganisationRepository) Save(org *domain.Organisation) error {
+func (organisationRep *OrganisationRepository) Save(org *entities.Organisation) error {
 	query := queries.InsertOrganisation()
 
 	stmt, err := organisationRep.DB.Prepare(query)
@@ -46,7 +46,7 @@ func (organisationRep *OrganisationRepository) Save(org *domain.Organisation) er
 
 }
 
-func (organisationRep *OrganisationRepository) Update(org *domain.Organisation) error {
+func (organisationRep *OrganisationRepository) Update(org *entities.Organisation) error {
 	query := queries.UpdateOrganisation()
 
 	stmt, err := organisationRep.DB.Prepare(query)
@@ -87,12 +87,12 @@ func (organisationRep *OrganisationRepository) Delete(id int64) error {
 
 }
 
-func (organisationRep *OrganisationRepository) GetOrganisationById(id int64) (*domain.Organisation, error) {
+func (organisationRep *OrganisationRepository) GetOrganisationById(id int64) (*entities.Organisation, error) {
 	query := queries.GetOrganisationById()
 
 	row := organisationRep.DB.QueryRow(query, id)
 
-	var organisation domain.Organisation
+	var organisation entities.Organisation
 
 	err := row.Scan(&organisation.Organisation_ID, &organisation.Organisation_Name, &organisation.Organisation_Type, &organisation.Organisation_URL, &organisation.Organisation_Logo, &organisation.Organisation_Location, &organisation.Created_At)
 
@@ -104,7 +104,7 @@ func (organisationRep *OrganisationRepository) GetOrganisationById(id int64) (*d
 
 }
 
-func (organisationRep *OrganisationRepository) GetAllOrganisations() ([]domain.Organisation, error) {
+func (organisationRep *OrganisationRepository) GetAllOrganisations() ([]entities.Organisation, error) {
 	query := queries.GetAllOrganisations()
 
 	rows, err := organisationRep.DB.Query(query)
@@ -115,10 +115,10 @@ func (organisationRep *OrganisationRepository) GetAllOrganisations() ([]domain.O
 
 	defer rows.Close()
 
-	var organisations []domain.Organisation
+	var organisations []entities.Organisation
 
 	for rows.Next() {
-		var organisation domain.Organisation
+		var organisation entities.Organisation
 
 		err := rows.Scan(&organisation.Organisation_ID, &organisation.Organisation_Name, &organisation.Organisation_Type, &organisation.Organisation_URL, &organisation.Organisation_Logo, &organisation.Organisation_Location, &organisation.Created_At)
 
