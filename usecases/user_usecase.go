@@ -1,8 +1,6 @@
 package usecases
 
 import (
-	"fmt"
-
 	"example.com/domain/entities"
 )
 
@@ -58,9 +56,6 @@ func (userUC *UserUsecase) GetProjectsByUserIdForOrganisation(userUUID string, o
 
 }
 
-// under work
-
 func (userUC *UserUsecase) GetUserOrganisationByUUID(userUUID string) ([]entities.Organisation, error) {
-	fmt.Println(userUC.userRepo.GetUserOrganisationByUUID(userUUID))
 	return userUC.userRepo.GetUserOrganisationByUUID(userUUID)
 }

@@ -182,8 +182,6 @@ func (userRep *UserRepository) GetProjectsByUserIdForOrganisation(userId int, or
 	return projects, nil
 }
 
-// under work
-
 func (userUC *UserRepository) GetUserOrganisationByUUID(userUUID string) ([]entities.Organisation, error) {
 	query := `SELECT * FROM Organisations WHERE organisation_id IN (SELECT organisation_id FROM UserOrganisations WHERE user_id = (SELECT user_id FROM Users WHERE user_uuid = $1));`
 
