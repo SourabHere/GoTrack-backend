@@ -1,6 +1,8 @@
 package usecases
 
 import (
+	"fmt"
+
 	"example.com/domain/entities"
 )
 
@@ -22,15 +24,15 @@ func (userUC *UserUsecase) GetUsers() ([]entities.User, error) {
 	return userUC.userRepo.GetAllUsers()
 }
 
-func (userUC *UserUsecase) GetUserById(uuid string) (*entities.User, error) {
-	return userUC.userRepo.GetUserById(uuid)
+func (userUC *UserUsecase) GetUserByUUID(uuid string) (*entities.User, error) {
+	return userUC.userRepo.GetUserByUUID(uuid)
 }
 
 func (userUC *UserUsecase) UpdateUser(user *entities.User) error {
 
 	userUUID := user.UserUUID
 
-	storedUser, err := userUC.GetUserById(userUUID)
+	storedUser, err := userUC.GetUserByUUID(userUUID)
 
 	if err != nil {
 		return err
@@ -46,7 +48,7 @@ func (userUC *UserUsecase) DeleteUser(id string) error {
 }
 
 func (userUC *UserUsecase) GetProjectsByUserIdForOrganisation(userUUID string, organisationId string) ([]entities.Project, error) {
-	user, err := userUC.GetUserById(userUUID)
+	user, err := userUC.GetUserByUUID(userUUID)
 
 	if err != nil {
 		return nil, err
@@ -54,4 +56,11 @@ func (userUC *UserUsecase) GetProjectsByUserIdForOrganisation(userUUID string, o
 
 	return userUC.userRepo.GetProjectsByUserIdForOrganisation(user.UserID, organisationId)
 
+}
+
+// under work
+
+func (userUC *UserUsecase) GetUserOrganisationByUUID(userUUID string) ([]entities.Organisation, error) {
+	fmt.Println(userUC.userRepo.GetUserOrganisationByUUID(userUUID))
+	return userUC.userRepo.GetUserOrganisationByUUID(userUUID)
 }
