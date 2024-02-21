@@ -116,7 +116,7 @@ func (userHandler *UserHandler) GetUserById(context *gin.Context) {
 		})
 	}
 
-	user, err := userHandler.userUsecase.GetUserById(uuid)
+	user, err := userHandler.userUsecase.GetUserByUUID(uuid)
 
 	if err != nil {
 		context.JSON(400, gin.H{
@@ -228,5 +228,30 @@ func (userHandler *UserHandler) GetProjectsByUserIdForOrganisation(context *gin.
 	}
 
 	context.JSON(200, projects)
+
+}
+
+func (userHandler *UserHandler) GetUserOrganisationsByUUID(context *gin.Context) {
+	userUUID := context.Param("uuid")
+
+	if userUUID == "" {
+		context.JSON(400, gin.H{
+			"message": "invalid request body",
+		})
+
+		return
+	}
+
+	organisations, err := userHandler.userUsecase.GetUserOrganisationByUUID(userUUID)
+
+	if err != nil {
+		context.JSON(400, gin.H{
+			"message": "could not get organisations",
+		})
+
+		return
+	}
+
+	context.JSON(200, organisations)
 
 }

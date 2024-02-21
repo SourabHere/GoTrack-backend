@@ -15,8 +15,10 @@ type UserRepository interface {
 	Update(user *User) error
 	Delete(id string) error
 	GetAllUsers() ([]User, error)
-	GetUserById(id string) (*User, error)
+	GetUserByUUID(id string) (*User, error)
 	GetProjectsByUserIdForOrganisation(userid int, organisationId string) ([]Project, error)
+	GetUserIdByUUID(userUUID string) (int, error)
+	GetUserOrganisationByUUID(userUUID string) ([]Organisation, error)
 }
 
 type UserUsecase interface {
@@ -24,6 +26,7 @@ type UserUsecase interface {
 	UpdateUser(user *User) error
 	DeleteUser(id string) error
 	GetUsers() ([]User, error)
-	GetUserById(id string) (*User, error)
+	GetUserByUUID(id string) (*User, error)
 	GetProjectsByUserIdForOrganisation(userUUID string, organisationId string) ([]Project, error)
+	GetUserOrganisationByUUID(userUUID string) ([]Organisation, error)
 }

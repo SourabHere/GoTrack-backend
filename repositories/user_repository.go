@@ -75,7 +75,7 @@ func (userRep *UserRepository) GetAllUsers() ([]entities.User, error) {
 	return users, nil
 }
 
-func (userRep *UserRepository) GetUserById(uuid string) (*entities.User, error) {
+func (userRep *UserRepository) GetUserByUUID(uuid string) (*entities.User, error) {
 
 	query := `SELECT * FROM Users WHERE user_uuid = $1;`
 
@@ -180,4 +180,58 @@ func (userRep *UserRepository) GetProjectsByUserIdForOrganisation(userId int, or
 	}
 
 	return projects, nil
+}
+
+func (userUC *UserRepository) GetUserOrganisationByUUID(userUUID string) ([]entities.Organisation, error) {
+	query := `SELECT * FROM Organisations WHERE organisation_id IN (SELECT organisation_id FROM UserOrganisations WHERE user_id = (SELECT user_id FROM Users WHERE user_uuid = $1));`
+
+	rows, err := userUC.DB.Query(query, userUUID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	if rows == nil {
+		return nil, errors.New("no rows returned from the database query")
+	}
+
+	defer rows.Close()
+
+	var organisations []entities.Organisation
+
+	for rows.Next() {
+		var organisation entities.Organisation
+		err := rows.Scan(&organisation.Organisation_ID,
+			&organisation.Organisation_Name,
+			&organisation.Organisation_Type,
+			&organisation.Organisation_URL,
+			&organisation.Organisation_Logo,
+			&organisation.Organisation_Location,
+			&organisation.Created_At,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		organisations = append(organisations, organisation)
+	}
+
+	return organisations, nil
+}
+
+func (userUC *UserRepository) GetUserIdByUUID(userUUID string) (int, error) {
+	query := `SELECT user_id FROM Users WHERE user_uuid = $1;`
+
+	row := userUC.DB.QueryRow(query, userUUID)
+
+	var userID int
+
+	err := row.Scan(&userID)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return userID, nil
 }

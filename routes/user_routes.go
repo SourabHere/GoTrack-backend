@@ -14,6 +14,7 @@ func SetUserRoutes(router *gin.Engine, handlers *app.HandlersSchema) {
 		apiUsers.GET("/", handlers.UserHandler.GetUsers)
 		apiUsers.POST("/", handlers.UserHandler.CreateUser)
 		apiUsers.GET("/:uuid", handlers.UserHandler.GetUserById)
+		apiUsers.GET("/:uuid/organisations", handlers.UserHandler.GetUserOrganisationsByUUID)
 
 		apiUsers.Use(middlewares.VerifyUser())
 		apiUsers.DELETE("/:uuid", handlers.UserHandler.DeleteUser)
