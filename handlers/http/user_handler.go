@@ -100,7 +100,10 @@ func (userHandler *UserHandler) GetUsers(context *gin.Context) {
 	if err != nil {
 		context.JSON(400, gin.H{
 			"message": "could not get users",
+			"err":     err.Error(),
 		})
+
+		return
 	}
 
 	context.JSON(200, users)
@@ -114,6 +117,8 @@ func (userHandler *UserHandler) GetUserById(context *gin.Context) {
 		context.JSON(400, gin.H{
 			"message": "invalid request body",
 		})
+
+		return
 	}
 
 	user, err := userHandler.userUsecase.GetUserByUUID(uuid)
@@ -137,6 +142,8 @@ func (UserHandler *UserHandler) UpdateUser(context *gin.Context) {
 		context.JSON(400, gin.H{
 			"message": "invalid request body",
 		})
+
+		return
 	}
 
 	var user entities.User
@@ -177,6 +184,8 @@ func (userHandler *UserHandler) DeleteUser(context *gin.Context) {
 		context.JSON(400, gin.H{
 			"message": "invalid request body",
 		})
+
+		return
 	}
 
 	err := userHandler.userUsecase.DeleteUser(uuid)

@@ -1,13 +1,14 @@
 package entities
 
 type User struct {
-	UserID         int    `json:"userId"`
-	FirstName      string `json:"firstName"`
-	LastName       string `json:"lastName"`
-	Email          string `json:"email"`
-	Designation_ID int    `json:"designationId"`
-	DateOfJoining  string `json:"dateOfJoining"`
-	UserUUID       string `json:"userUUID"`
+	UserID         int     `json:"userId"`
+	FirstName      string  `json:"firstName"`
+	LastName       string  `json:"lastName"`
+	Email          string  `json:"email"`
+	Designation_ID int     `json:"designationId"`
+	DateOfJoining  string  `json:"dateOfJoining"`
+	UserUUID       string  `json:"userUUID"`
+	Location       *string `json:"location"`
 }
 
 type UserRepository interface {

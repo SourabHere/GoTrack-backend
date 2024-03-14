@@ -27,10 +27,6 @@ func main() {
 
 	handlers := app.IntitialiseHandlers(db.DB)
 
-	if err != nil {
-		fmt.Println("Error: ", err.Error())
-	}
-
 	server := gin.Default()
 
 	config := cors.DefaultConfig()

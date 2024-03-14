@@ -65,7 +65,7 @@ func (userRep *UserRepository) GetAllUsers() ([]entities.User, error) {
 
 	for rows.Next() {
 		var user entities.User
-		err := rows.Scan(&user.UserID, &user.FirstName, &user.LastName, &user.Email, &user.Designation_ID, &user.DateOfJoining, &user.UserUUID)
+		err := rows.Scan(&user.UserID, &user.FirstName, &user.LastName, &user.Email, &user.Designation_ID, &user.DateOfJoining, &user.UserUUID, &user.Location)
 		if err != nil {
 			return nil, err
 		}
@@ -91,6 +91,7 @@ func (userRep *UserRepository) GetUserByUUID(uuid string) (*entities.User, error
 		&user.Designation_ID,
 		&user.DateOfJoining,
 		&user.UserUUID,
+		&user.Location,
 	)
 
 	if err != nil {

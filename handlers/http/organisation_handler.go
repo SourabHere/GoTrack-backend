@@ -134,6 +134,8 @@ func (orgHandler *Organisationhandler) DeleteOrganisation(context *gin.Context) 
 			"message": "invalid id",
 			"error":   err.Error(),
 		})
+
+		return
 	}
 
 	err = orgHandler.OrganisationUsecase.DeleteOrganisation(organisation_id)
