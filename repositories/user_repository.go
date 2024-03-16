@@ -36,10 +36,6 @@ func (userRep *UserRepository) Save(u *entities.User) error {
 		u.UserUUID,
 	)
 
-	if err != nil {
-		return err
-	}
-
 	err = result.Scan(&u.UserID)
 
 	return err
