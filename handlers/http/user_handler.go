@@ -16,7 +16,7 @@ func NewUserHandler(userUsecase entities.UserUsecase) *UserHandler {
 	}
 }
 
-func (UserHandler *UserHandler) CreateUser(context *gin.Context) {
+func (UserHandler *UserHandler) UserManager(context *gin.Context) {
 
 	var user entities.User
 
