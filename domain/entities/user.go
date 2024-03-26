@@ -20,6 +20,7 @@ type UserRepository interface {
 	GetProjectsByUserIdForOrganisation(userid int, organisationId string) ([]Project, error)
 	GetUserIdByUUID(userUUID string) (int, error)
 	GetUserOrganisationByUUID(userUUID string) ([]Organisation, error)
+	GetDesignationByID(designationID int64) (string, error)
 }
 
 type UserUsecase interface {
@@ -30,4 +31,5 @@ type UserUsecase interface {
 	GetUserByUUID(id string) (*User, error)
 	GetProjectsByUserIdForOrganisation(userUUID string, organisationId string) ([]Project, error)
 	GetUserOrganisationByUUID(userUUID string) ([]Organisation, error)
+	GetDesignationByID(designationID int64) (string, error)
 }

@@ -1,6 +1,8 @@
 package http
 
 import (
+	"strconv"
+
 	"example.com/domain/entities"
 	"example.com/domain/requests"
 	"github.com/gin-gonic/gin"
@@ -262,5 +264,33 @@ func (userHandler *UserHandler) GetUserOrganisationsByUUID(context *gin.Context)
 	}
 
 	context.JSON(200, organisations)
+
+}
+
+func (UserHandler *UserHandler) GetUserDesignationByID(context *gin.Context) {
+
+	designationID, err := strconv.ParseInt(context.Param("designationId"), 10, 64)
+
+	if err != nil {
+		context.AbortWithStatusJSON(400, gin.H{
+			"message": "invalid designation id",
+		})
+
+		return
+	}
+
+	designationName, err := UserHandler.userUsecase.GetDesignationByID(designationID)
+
+	if err != nil {
+		context.AbortWithStatusJSON(404, gin.H{
+			"message": "could not find designation",
+		})
+
+		return
+	}
+
+	context.JSON(200, gin.H{
+		"designation": designationName,
+	})
 
 }
