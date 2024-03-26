@@ -59,3 +59,7 @@ func (userUC *UserUsecase) GetProjectsByUserIdForOrganisation(userUUID string, o
 func (userUC *UserUsecase) GetUserOrganisationByUUID(userUUID string) ([]entities.Organisation, error) {
 	return userUC.userRepo.GetUserOrganisationByUUID(userUUID)
 }
+
+func (userUC *UserUsecase) GetDesignationByID(designationID int64) (string, error) {
+	return userUC.userRepo.GetDesignationByID(designationID)
+}

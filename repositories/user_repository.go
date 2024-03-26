@@ -232,3 +232,19 @@ func (userUC *UserRepository) GetUserIdByUUID(userUUID string) (int, error) {
 
 	return userID, nil
 }
+
+func (userUC *UserRepository) GetDesignationByID(DesignationID int64) (string, error) {
+	query := `SELECT designation_Name FROM UserDesignation WHERE UD_ID = $1;`
+
+	row := userUC.DB.QueryRow(query, DesignationID)
+
+	var designation_name string
+
+	err := row.Scan(&designation_name)
+
+	if err != nil {
+		return "-1", err
+	}
+
+	return designation_name, nil
+}
