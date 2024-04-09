@@ -1,5 +1,7 @@
 package entities
 
+import "example.com/domain/requests"
+
 type User struct {
 	UserID         int     `json:"userId"`
 	FirstName      string  `json:"firstName"`
@@ -21,6 +23,7 @@ type UserRepository interface {
 	GetUserIdByUUID(userUUID string) (int, error)
 	GetUserOrganisationByUUID(userUUID string) ([]Organisation, error)
 	GetDesignationByID(designationID int64) (string, error)
+	RegisterUserProject(userId int, projectId int) error
 }
 
 type UserUsecase interface {
@@ -32,4 +35,5 @@ type UserUsecase interface {
 	GetProjectsByUserIdForOrganisation(userUUID string, organisationId string) ([]Project, error)
 	GetUserOrganisationByUUID(userUUID string) ([]Organisation, error)
 	GetDesignationByID(designationID int64) (string, error)
+	RegisterUserProject(data *requests.RegisterProject) error
 }

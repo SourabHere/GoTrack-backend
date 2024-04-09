@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"example.com/domain/entities"
+	"example.com/domain/requests"
 	"github.com/gin-gonic/gin"
 )
 
@@ -67,7 +68,8 @@ func (projectHandler *ProjectHandler) GetProjectById(context *gin.Context) {
 }
 
 func (projectHandler *ProjectHandler) AddProject(context *gin.Context) {
-	var project *entities.Project
+
+	var project requests.CreateProjectRequest
 
 	err := context.BindJSON(&project)
 
@@ -75,25 +77,55 @@ func (projectHandler *ProjectHandler) AddProject(context *gin.Context) {
 
 		context.JSON(http.StatusBadRequest, gin.H{
 			"message": "invalid values found",
-			"error":   err.Error(),
 		})
 
 		return
 	}
 
-	err = projectHandler.ProjectUsecase.CreateProject(project)
+	categoryName := project.ProjectCategory
+
+	projectCategoryID, err := projectHandler.ProjectUsecase.GetProjectCategoryIDByName(categoryName)
 
 	if err != nil {
 
-		context.JSON(http.StatusFailedDependency, gin.H{
-			"message": "could not create project",
-			"error":   err.Error(),
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid values found",
 		})
 
 		return
 	}
 
-	context.JSON(200, project)
+	organisationID, err := strconv.Atoi(project.OrganisationID)
+
+	if err != nil {
+
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid organisation found",
+		})
+
+		return
+
+	}
+
+	var projectObj = &entities.Project{
+		ProjectName:         project.ProjectName,
+		Project_Desc:        project.ProjectDesc,
+		Project_Category_ID: projectCategoryID,
+		Project_URL:         &project.ProjectURL,
+		Organisation_ID:     organisationID,
+	}
+
+	addedProject, err := projectHandler.ProjectUsecase.CreateProject(projectObj)
+
+	if err != nil {
+		context.JSON(http.StatusFailedDependency, gin.H{
+			"message": "could not create project",
+		})
+
+		return
+	}
+
+	context.JSON(200, addedProject)
 
 }
 
@@ -119,7 +151,6 @@ func (projectHandler *ProjectHandler) UpdateProject(context *gin.Context) {
 
 		context.JSON(http.StatusBadRequest, gin.H{
 			"message": "invalid values found",
-			"error":   err.Error(),
 		})
 
 		return
@@ -131,7 +162,6 @@ func (projectHandler *ProjectHandler) UpdateProject(context *gin.Context) {
 
 		context.JSON(http.StatusFailedDependency, gin.H{
 			"message": "could not update project",
-			"error":   err.Error(),
 		})
 
 		return
@@ -171,4 +201,20 @@ func (projectHandler *ProjectHandler) DeleteProject(context *gin.Context) {
 	context.JSON(200, gin.H{
 		"message": "project deleted successfully",
 	})
+}
+
+func (projectHandler *ProjectHandler) GetProjectCategories(context *gin.Context) {
+
+	projectTypes, err := projectHandler.ProjectUsecase.GetProjectCategories()
+
+	if err != nil {
+		context.JSON(http.StatusExpectationFailed, gin.H{
+			"message": "could not get project categories",
+			"error":   err.Error(),
+		})
+		return
+	}
+
+	context.JSON(200, projectTypes)
+
 }
