@@ -12,7 +12,7 @@ func NewProjectUsecase(projectRepo entities.ProjectRepository) *ProjectUsecase {
 	}
 }
 
-func (projectUC *ProjectUsecase) CreateProject(project *entities.Project) error {
+func (projectUC *ProjectUsecase) CreateProject(project *entities.Project) (*entities.Project, error) {
 	return projectUC.ProjectRepo.Save(project)
 }
 
@@ -30,4 +30,12 @@ func (projectUC *ProjectUsecase) GetProjects() ([]entities.Project, error) {
 
 func (projectUC *ProjectUsecase) GetProjectById(id int64) (*entities.Project, error) {
 	return projectUC.ProjectRepo.GetProjectById(id)
+}
+
+func (projectUC *ProjectUsecase) GetProjectCategories() ([]string, error) {
+	return projectUC.ProjectRepo.GetProjectCategories()
+}
+
+func (projectUC *ProjectUsecase) GetProjectCategoryIDByName(name string) (int, error) {
+	return projectUC.ProjectRepo.GetProjectCategoryIDByName(name)
 }

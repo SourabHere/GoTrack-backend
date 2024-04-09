@@ -248,3 +248,19 @@ func (userUC *UserRepository) GetDesignationByID(DesignationID int64) (string, e
 
 	return designation_name, nil
 }
+
+func (userUC *UserRepository) RegisterUserProject(userId int, projectId int) error {
+	query := `INSERT INTO UserProjects (user_id, project_id) VALUES ($1, $2);`
+
+	stmt, err := userUC.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(userId, projectId)
+
+	return err
+}

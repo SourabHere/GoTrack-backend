@@ -16,17 +16,21 @@ type Project struct {
 }
 
 type ProjectRepository interface {
-	Save(project *Project) error
+	Save(project *Project) (*Project, error)
 	Update(project *Project) error
 	Delete(id int64) error
 	GetAllProjects() ([]Project, error)
 	GetProjectById(id int64) (*Project, error)
+	GetProjectCategories() ([]string, error)
+	GetProjectCategoryIDByName(name string) (int, error)
 }
 
 type ProjectUsecase interface {
-	CreateProject(project *Project) error
+	CreateProject(project *Project) (*Project, error)
 	UpdateProject(project *Project) error
 	DeleteProject(id int64) error
 	GetProjects() ([]Project, error)
 	GetProjectById(id int64) (*Project, error)
+	GetProjectCategories() ([]string, error)
+	GetProjectCategoryIDByName(name string) (int, error)
 }

@@ -10,6 +10,8 @@ func SetProjectRoutes(router *gin.Engine, handlers *app.HandlersSchema) {
 
 	apiProjects := router.Group("api/projects")
 	{
+		apiProjects.GET("/categories", handlers.ProjectHandler.GetProjectCategories)
+
 		apiProjects.Use(middlewares.AuthMiddleware())
 
 		apiProjects.POST("/", handlers.ProjectHandler.AddProject)

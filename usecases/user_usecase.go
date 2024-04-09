@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"example.com/domain/entities"
+	"example.com/domain/requests"
 )
 
 type UserUsecase struct {
@@ -62,4 +63,15 @@ func (userUC *UserUsecase) GetUserOrganisationByUUID(userUUID string) ([]entitie
 
 func (userUC *UserUsecase) GetDesignationByID(designationID int64) (string, error) {
 	return userUC.userRepo.GetDesignationByID(designationID)
+}
+
+func (userUC *UserUsecase) RegisterUserProject(data *requests.RegisterProject) error {
+
+	userId, err := userUC.userRepo.GetUserIdByUUID(data.UserUUID)
+
+	if err != nil {
+		return err
+	}
+
+	return userUC.userRepo.RegisterUserProject(userId, data.ProjectID)
 }

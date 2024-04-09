@@ -19,13 +19,13 @@ func NewProjectRepository(db *sql.DB) *ProjectRepository {
 	}
 }
 
-func (projectRep *ProjectRepository) Save(project *entities.Project) error {
+func (projectRep *ProjectRepository) Save(project *entities.Project) (*entities.Project, error) {
 	query := queries.InsertProject()
 
 	stmt, err := projectRep.DB.Prepare(query)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	project.Created_At = time.Now()
@@ -37,7 +37,11 @@ func (projectRep *ProjectRepository) Save(project *entities.Project) error {
 
 	err = result.Scan(&project.ProjectID)
 
-	return err
+	if err != nil {
+		return nil, err
+	}
+
+	return project, nil
 
 }
 
@@ -145,4 +149,64 @@ func (projectRep *ProjectRepository) GetProjectById(id int64) (*entities.Project
 	}
 
 	return &project, nil
+}
+
+func (projectRep *ProjectRepository) GetProjectCategories() ([]string, error) {
+	query := `SELECT category_name FROM Category;`
+
+	rows, err := projectRep.DB.Query(query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	var projectTypes []string
+
+	for rows.Next() {
+		var projectType string
+
+		err := rows.Scan(&projectType)
+
+		if err != nil {
+			return nil, err
+		}
+
+		projectTypes = append(projectTypes, projectType)
+	}
+
+	return projectTypes, nil
+
+}
+
+func (projectRep *ProjectRepository) GetProjectCategoryIDByName(name string) (int, error) {
+	query := `SELECT category_id FROM Category WHERE category_name = $1;`
+
+	row := projectRep.DB.QueryRow(query, name)
+
+	if row == nil {
+		Insertquery := `INSERT INTO Category (category_name) VALUES ($1);`
+
+		stmt, err := projectRep.DB.Prepare(Insertquery)
+
+		if err != nil {
+			return 0, err
+		}
+
+		defer stmt.Close()
+
+		row = projectRep.DB.QueryRow(query, name)
+
+	}
+
+	var id int
+
+	err := row.Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return id, nil
 }

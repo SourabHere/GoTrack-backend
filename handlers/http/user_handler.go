@@ -294,3 +294,33 @@ func (UserHandler *UserHandler) GetUserDesignationByID(context *gin.Context) {
 	})
 
 }
+
+func (userHandler *UserHandler) RegisterUserProject(context *gin.Context) {
+
+	var project requests.RegisterProject
+
+	err := context.BindJSON(&project)
+
+	if err != nil {
+		context.JSON(400, gin.H{
+			"message": "invalid request body",
+		})
+
+		return
+	}
+
+	err = userHandler.userUsecase.RegisterUserProject(&project)
+
+	if err != nil {
+		context.JSON(400, gin.H{
+			"message": "could not register project",
+		})
+
+		return
+	}
+
+	context.JSON(200, gin.H{
+		"message": "project registered successfully",
+	})
+
+}
