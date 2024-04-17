@@ -183,28 +183,19 @@ func (projectRep *ProjectRepository) GetProjectCategories() ([]string, error) {
 func (projectRep *ProjectRepository) GetProjectCategoryIDByName(name string) (int, error) {
 	query := `SELECT category_id FROM Category WHERE category_name = $1;`
 
-	row := projectRep.DB.QueryRow(query, name)
+	var id int
 
-	if row == nil {
-		Insertquery := `INSERT INTO Category (category_name) VALUES ($1);`
+	err := projectRep.DB.QueryRow(query, name).Scan(&id)
 
-		stmt, err := projectRep.DB.Prepare(Insertquery)
+	switch {
+	case err == sql.ErrNoRows:
+		insertQuery := `INSERT INTO Category (category_name) VALUES ($1) RETURNING category_id;`
 
+		err = projectRep.DB.QueryRow(insertQuery, name).Scan(&id)
 		if err != nil {
 			return 0, err
 		}
-
-		defer stmt.Close()
-
-		row = projectRep.DB.QueryRow(query, name)
-
-	}
-
-	var id int
-
-	err := row.Scan(&id)
-
-	if err != nil {
+	case err != nil:
 		return 0, err
 	}
 
