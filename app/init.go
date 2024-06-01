@@ -12,6 +12,7 @@ type HandlersSchema struct {
 	OrgHandler     *http.Organisationhandler
 	UserHandler    *http.UserHandler
 	ProjectHandler *http.ProjectHandler
+	IssueHandler   *http.IssueHandler
 }
 
 func IntitialiseHandlers(db *sql.DB) *HandlersSchema {
@@ -28,10 +29,15 @@ func IntitialiseHandlers(db *sql.DB) *HandlersSchema {
 	projectUsecase := usecases.NewProjectUsecase(projectRepo)
 	projectHandler := http.NewProjectHandler(projectUsecase)
 
+	issueRepo := repositories.NewIssueRepository(db)
+	issueUsecase := usecases.NewIssueUsecase(issueRepo)
+	IssueHandler := http.NewIssueHandler(issueUsecase)
+
 	handlers := &HandlersSchema{
 		OrgHandler:     orgHandler,
 		UserHandler:    userHandler,
 		ProjectHandler: projectHandler,
+		IssueHandler:   IssueHandler,
 	}
 
 	return handlers
