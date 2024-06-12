@@ -12,9 +12,10 @@ func SetIssueRoutes(router *gin.Engine, handlers *app.HandlersSchema) {
 
 		// apiIssues.Use(middlewares.AuthMiddleware())
 		apiIssues.GET("/", handlers.IssueHandler.GetIssues)
-		apiIssues.GET("/:id", handlers.IssueHandler.GetIssueById)
 		apiIssues.POST("/", handlers.IssueHandler.AddIssue)
-
+		apiIssues.GET("/:id", handlers.IssueHandler.GetIssueById)
+		apiIssues.PUT("/:id", handlers.IssueHandler.UpdateIssue)
+		apiIssues.GET("/status/:projectId", handlers.IssueHandler.GetIssueByStatus)
 	}
 
 }

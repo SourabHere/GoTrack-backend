@@ -98,8 +98,53 @@ func (issueRepo *IssueRepository) GetIssueById(id int64) (*entities.Issue, error
 
 }
 
+func (issueRepo *IssueRepository) Update(issue *entities.Issue) error {
+	query := `UPDATE Issues SET Issue_Name = $1, Issue_Desc = $2, Due_Date = $3, Creator_ID = $4, Project_ID = $5, Issue_Type_ID = $6, Files_Attached = $7 WHERE Issue_ID = $8;`
+
+	stmt, err := issueRepo.DB.Prepare(query)
+
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	incoming_string_array := issue.FilesAttached
+	formatted_string_array := ""
+
+	if len(incoming_string_array) > 0 {
+
+		for i := 0; i < len(incoming_string_array); i++ {
+			if i == 0 {
+				formatted_string_array = "{" + incoming_string_array[i] + ","
+			} else {
+				formatted_string_array += incoming_string_array[i] + ","
+			}
+		}
+
+		formatted_string_array = formatted_string_array[:len(formatted_string_array)-1] + "}"
+
+	} else {
+		formatted_string_array = "{}"
+	}
+
+	_, err = stmt.Exec(
+		issue.IssueName,
+		issue.IssueDesc,
+		issue.DueDate,
+		issue.CreatorID,
+		issue.ProjectID,
+		issue.IssueTypeID,
+		formatted_string_array,
+		issue.IssueID,
+	)
+
+	return err
+
+}
+
 func (issueRepo *IssueRepository) GetAllIssues() ([]entities.Issue, error) {
-	query := `SELECT * FROM Issues;`
+	query := `SELECT * FROM Issues ORDER BY Issue_Id ASC;`
 
 	rows, err := issueRepo.DB.Query(query)
 
@@ -136,6 +181,50 @@ func (issueRepo *IssueRepository) GetAllIssues() ([]entities.Issue, error) {
 
 		issues = append(issues, issue)
 
+	}
+
+	return issues, nil
+
+}
+
+func (issueRepo *IssueRepository) GetIssuesByStatus(status string, projectId int64) ([]entities.Issue, error) {
+	query := `SELECT * FROM Issues WHERE Issue_Status = $1 AND Project_Id = $2;`
+
+	rows, err := issueRepo.DB.Query(query, status, projectId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var issues []entities.Issue
+
+	for rows.Next() {
+		var issue entities.Issue
+
+		var filesAttachedTemp []byte
+
+		err := rows.Scan(
+			&issue.IssueID,
+			&issue.IssueName,
+			&issue.IssuePriority,
+			&issue.IssueStatus,
+			&issue.IssueDesc,
+			&issue.CreatedAt,
+			&issue.UpdatedAt,
+			&issue.DueDate,
+			&issue.CreatorID,
+			&issue.ProjectID,
+			&issue.IssueTypeID,
+			&filesAttachedTemp,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+
+		issue.FilesAttached = utils.ParseIssueFilesAttached(filesAttachedTemp)
+
+		issues = append(issues, issue)
 	}
 
 	return issues, nil

@@ -3,7 +3,7 @@ package entities
 import "time"
 
 type Issue struct {
-	IssueID       int       `json:"issueId"`
+	IssueID       int64     `json:"issueId"`
 	IssueName     string    `json:"issueName"`
 	IssuePriority string    `json:"issuePriority"`
 	IssueStatus   string    `json:"issueStatus"`
@@ -19,16 +19,18 @@ type Issue struct {
 
 type IssueRepository interface {
 	Save(issue *Issue) error
-	// Update(issue *Issue) error
+	Update(issue *Issue) error
 	// Delete(id int64) error
 	GetAllIssues() ([]Issue, error)
 	GetIssueById(id int64) (*Issue, error)
+	GetIssuesByStatus(status string, projectId int64) ([]Issue, error)
 }
 
 type IssueUsecase interface {
 	CreateIssue(issue *Issue) error
-	// UpdateIssue(issue *Issue) error
+	UpdateIssue(issue *Issue) error
 	// DeleteIssue(id int64) error
 	GetAllIssues() ([]Issue, error)
 	GetIssueById(id int64) (*Issue, error)
+	GetIssueByStatus(projectId int64) (map[string][]Issue, error)
 }

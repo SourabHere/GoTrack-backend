@@ -98,3 +98,86 @@ func (issueHandler *IssueHandler) AddIssue(context *gin.Context) {
 	})
 
 }
+
+func (issueHandler *IssueHandler) UpdateIssue(context *gin.Context) {
+
+	issueId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+
+	if err != nil {
+
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid issue id",
+			"error":   err.Error(),
+		})
+
+		return
+
+	}
+
+	var issue entities.Issue
+
+	err = context.ShouldBind(&issue)
+
+	if err != nil {
+
+		context.JSON(http.StatusBadRequest, gin.H{"error": "Error in the given issue params"})
+
+		return
+
+	}
+
+	issue.IssueID = issueId
+
+	err = issueHandler.IssueUsecase.UpdateIssue(&issue)
+
+	if err != nil {
+
+		context.JSON(http.StatusExpectationFailed, gin.H{
+
+			"message": "could not update issue",
+			"error":   err.Error(),
+		})
+
+		return
+	}
+
+	context.JSON(http.StatusAccepted, gin.H{
+
+		"message": "issue updated successfully",
+		"issue":   issue,
+	})
+
+}
+
+func (issueHandler *IssueHandler) GetIssueByStatus(context *gin.Context) {
+
+	projectId, err := strconv.ParseInt(context.Param("projectId"), 10, 64)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid project id",
+			"error":   err.Error(),
+		})
+
+		return
+	}
+
+	issueStatusMap, err := issueHandler.IssueUsecase.GetIssueByStatus(projectId)
+
+	if err != nil {
+
+		context.JSON(http.StatusExpectationFailed, gin.H{
+			"message": "could not get issues by status",
+			"error":   err.Error(),
+		})
+
+		return
+	}
+
+	context.JSON(http.StatusAccepted,
+		gin.H{
+			"project_id": projectId,
+			"issuesMap":  issueStatusMap,
+		})
+
+}
