@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"example.com/domain/entities"
+	"example.com/domain/responses"
 	"github.com/gin-gonic/gin"
 )
 
@@ -174,10 +175,12 @@ func (issueHandler *IssueHandler) GetIssueByStatus(context *gin.Context) {
 		return
 	}
 
+	response := responses.IssueMapResponse{
+		ProjectID: int(projectId),
+		IssuesMap: issueStatusMap,
+	}
+
 	context.JSON(http.StatusAccepted,
-		gin.H{
-			"project_id": projectId,
-			"issuesMap":  issueStatusMap,
-		})
+		response)
 
 }

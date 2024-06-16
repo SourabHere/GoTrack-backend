@@ -31,19 +31,30 @@ func (issueUC *IssueUsecase) UpdateIssue(issue *entities.Issue) error {
 	return issueUC.IssueRepo.Update(issue)
 }
 
-func (issueUC *IssueUsecase) GetIssueByStatus(projectId int64) (map[string][]entities.Issue, error) {
-	statusMap := map[string][]entities.Issue{}
+func (issueUC *IssueUsecase) GetIssueByStatus(projectId int64) (entities.IssuesMap, error) {
+	var issuesMap entities.IssuesMap
 
 	status := enums.GetAllStatus()
 
-	for index := range status {
-		issues, err := issueUC.IssueRepo.GetIssuesByStatus(status[index], projectId)
+	for _, s := range status {
+		issues, err := issueUC.IssueRepo.GetIssuesByStatus(s, projectId)
 		if err != nil {
-			return nil, err
+			return entities.IssuesMap{}, err
 		}
-		statusMap[status[index]] = issues
+
+		switch s {
+		case enums.To_Do:
+			issuesMap.ToDo = append(issuesMap.ToDo, issues...)
+		case enums.Open:
+			issuesMap.Open = append(issuesMap.Open, issues...)
+		case enums.In_Progress:
+			issuesMap.InProgress = append(issuesMap.InProgress, issues...)
+		case enums.Review:
+			issuesMap.Review = append(issuesMap.Review, issues...)
+		case enums.Closed:
+			issuesMap.Closed = append(issuesMap.Closed, issues...)
+		}
 	}
 
-	return statusMap, nil
-
+	return issuesMap, nil
 }

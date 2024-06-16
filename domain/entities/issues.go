@@ -17,6 +17,14 @@ type Issue struct {
 	FilesAttached []string  `json:"filesAttached"`
 }
 
+type IssuesMap struct {
+	ToDo       []Issue `json:"To Do"`
+	Open       []Issue `json:"Open"`
+	InProgress []Issue `json:"In Progress"`
+	Review     []Issue `json:"Review"`
+	Closed     []Issue `json:"Closed"`
+}
+
 type IssueRepository interface {
 	Save(issue *Issue) error
 	Update(issue *Issue) error
@@ -32,5 +40,5 @@ type IssueUsecase interface {
 	// DeleteIssue(id int64) error
 	GetAllIssues() ([]Issue, error)
 	GetIssueById(id int64) (*Issue, error)
-	GetIssueByStatus(projectId int64) (map[string][]Issue, error)
+	GetIssueByStatus(projectId int64) (IssuesMap, error)
 }
