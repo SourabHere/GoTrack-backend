@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 
 	"example.com/domain/entities"
 	"example.com/utils"
@@ -99,7 +100,7 @@ func (issueRepo *IssueRepository) GetIssueById(id int64) (*entities.Issue, error
 }
 
 func (issueRepo *IssueRepository) Update(issue *entities.Issue) error {
-	query := `UPDATE Issues SET Issue_Name = $1, Issue_Desc = $2, Due_Date = $3, Creator_ID = $4, Project_ID = $5, Issue_Type_ID = $6, Files_Attached = $7 WHERE Issue_ID = $8;`
+	query := `UPDATE Issues SET Issue_Name = $1, Issue_Priority = $2, Issue_Status = $3, Issue_Desc = $4, Creator_ID = $5, Project_ID = $6, Issue_Type_ID = $7, Files_Attached = $8 WHERE Issue_ID = $9;`
 
 	stmt, err := issueRepo.DB.Prepare(query)
 
@@ -130,14 +131,17 @@ func (issueRepo *IssueRepository) Update(issue *entities.Issue) error {
 
 	_, err = stmt.Exec(
 		issue.IssueName,
+		issue.IssuePriority,
+		issue.IssueStatus,
 		issue.IssueDesc,
-		issue.DueDate,
 		issue.CreatorID,
 		issue.ProjectID,
 		issue.IssueTypeID,
 		formatted_string_array,
 		issue.IssueID,
 	)
+
+	fmt.Print(err)
 
 	return err
 
