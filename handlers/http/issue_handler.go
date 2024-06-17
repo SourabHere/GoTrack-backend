@@ -119,6 +119,8 @@ func (issueHandler *IssueHandler) UpdateIssue(context *gin.Context) {
 
 	err = context.ShouldBind(&issue)
 
+	// fmt.Print(issue)
+
 	if err != nil {
 
 		context.JSON(http.StatusBadRequest, gin.H{"error": "Error in the given issue params"})
