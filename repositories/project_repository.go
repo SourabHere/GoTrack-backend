@@ -201,3 +201,17 @@ func (projectRep *ProjectRepository) GetProjectCategoryIDByName(name string) (in
 
 	return id, nil
 }
+
+func (projectRep *ProjectRepository) GetProjectCategoryById(categoryID int) (string, error) {
+	query := `SELECT category_name FROM Category WHERE category_id = $1;`
+
+	var name string
+
+	err := projectRep.DB.QueryRow(query, categoryID).Scan(&name)
+
+	if err != nil {
+		return "", err
+	}
+
+	return name, nil
+}

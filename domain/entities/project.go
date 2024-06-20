@@ -23,6 +23,7 @@ type ProjectRepository interface {
 	GetProjectById(id int64) (*Project, error)
 	GetProjectCategories() ([]string, error)
 	GetProjectCategoryIDByName(name string) (int, error)
+	GetProjectCategoryById(categoryID int) (string, error)
 }
 
 type ProjectUsecase interface {
@@ -33,4 +34,5 @@ type ProjectUsecase interface {
 	GetProjectById(id int64) (*Project, error)
 	GetProjectCategories() ([]string, error)
 	GetProjectCategoryIDByName(name string) (int, error)
+	GetProjectCategoryById(categoryID int) (string, error)
 }
