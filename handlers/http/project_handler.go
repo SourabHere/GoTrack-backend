@@ -131,21 +131,22 @@ func (projectHandler *ProjectHandler) AddProject(context *gin.Context) {
 
 func (projectHandler *ProjectHandler) UpdateProject(context *gin.Context) {
 
-	projectId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+	var project requests.UpdateProjectRequest
+
+	err := context.ShouldBind(&project)
 
 	if err != nil {
+
 		context.JSON(http.StatusBadRequest, gin.H{
-			"message": "invalid id",
+			"message": "invalid values found in request",
 		})
 
 		return
 	}
 
-	var project entities.Project
+	categoryName := project.ProjectCategory
 
-	err = context.ShouldBind(&project)
-
-	project.ProjectID = int(projectId)
+	projectCategoryID, err := projectHandler.ProjectUsecase.GetProjectCategoryIDByName(categoryName)
 
 	if err != nil {
 
@@ -156,7 +157,36 @@ func (projectHandler *ProjectHandler) UpdateProject(context *gin.Context) {
 		return
 	}
 
-	err = projectHandler.ProjectUsecase.UpdateProject(&project)
+	organisationID, err := strconv.Atoi(project.OrganisationID)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid organisation found",
+		})
+
+		return
+	}
+
+	projectID, err := strconv.Atoi(project.ProjectID)
+
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid organisation found",
+		})
+
+		return
+	}
+
+	var projectObj = &entities.Project{
+		ProjectID:           projectID,
+		ProjectName:         project.ProjectName,
+		Project_Desc:        project.ProjectDesc,
+		Project_Category_ID: projectCategoryID,
+		Project_URL:         &project.ProjectURL,
+		Organisation_ID:     organisationID,
+	}
+
+	err = projectHandler.ProjectUsecase.UpdateProject(projectObj)
 
 	if err != nil {
 
@@ -217,4 +247,35 @@ func (projectHandler *ProjectHandler) GetProjectCategories(context *gin.Context)
 
 	context.JSON(200, projectTypes)
 
+}
+
+func (projectHandler *ProjectHandler) GetProjectCategoryById(context *gin.Context) {
+
+	categoryId, err := strconv.ParseInt(context.Param("id"), 10, 64)
+
+	if err != nil {
+
+		context.JSON(http.StatusBadRequest, gin.H{
+			"message": "invalid id",
+			"error":   err.Error(),
+		})
+
+		return
+
+	}
+
+	projectType, err := projectHandler.ProjectUsecase.GetProjectCategoryById(int(categoryId))
+
+	if err != nil {
+
+		context.JSON(http.StatusNotFound, gin.H{
+			"message": "invalid id",
+			"error":   err.Error(),
+		})
+
+		return
+
+	}
+
+	context.JSON(200, projectType)
 }

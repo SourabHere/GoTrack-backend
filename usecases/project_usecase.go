@@ -39,3 +39,7 @@ func (projectUC *ProjectUsecase) GetProjectCategories() ([]string, error) {
 func (projectUC *ProjectUsecase) GetProjectCategoryIDByName(name string) (int, error) {
 	return projectUC.ProjectRepo.GetProjectCategoryIDByName(name)
 }
+
+func (projectUC *ProjectUsecase) GetProjectCategoryById(categoryID int) (string, error) {
+	return projectUC.ProjectRepo.GetProjectCategoryById(categoryID)
+}
