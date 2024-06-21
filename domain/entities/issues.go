@@ -18,7 +18,7 @@ type Issue struct {
 }
 
 type IssuesMap struct {
-	ToDo       []Issue `json:"To Do"`
+	// ToDo       []Issue `json:"To Do"`
 	Open       []Issue `json:"Open"`
 	InProgress []Issue `json:"In Progress"`
 	Review     []Issue `json:"Review"`
