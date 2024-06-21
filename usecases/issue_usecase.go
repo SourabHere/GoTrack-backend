@@ -43,8 +43,8 @@ func (issueUC *IssueUsecase) GetIssueByStatus(projectId int64) (entities.IssuesM
 		}
 
 		switch s {
-		case enums.To_Do:
-			issuesMap.ToDo = append(issuesMap.ToDo, issues...)
+		// case enums.To_Do:
+		// 	issuesMap.ToDo = append(issuesMap.ToDo, issues...)
 		case enums.Open:
 			issuesMap.Open = append(issuesMap.Open, issues...)
 		case enums.In_Progress:
